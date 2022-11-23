@@ -1,0 +1,20 @@
+import pandas as pd
+import numpy as np
+import csv
+from allennlp_models.common.ontonotes import Ontonotes
+
+onto = Ontonotes()
+ds = onto.sentence_iterator('../code_base/ontonotes_data/conll-2012-test/data/english/annotations/bc/cctv/00/cctv_0005.gold_conll')
+
+all_sentences = []
+all_sentences_entities = []
+all_sentences_pos = []
+for x in ds:
+    sentence = ''
+    for xs in x.words:
+        sentence += xs + ' '
+    all_sentences.append(sentence)
+    all_sentences_pos.append(x.pos_tags)
+    all_sentences_entities.append(x.named_entities)
+
+print("All Sentences:", all_sentences, "\n")
