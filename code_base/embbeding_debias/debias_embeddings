@@ -1,0 +1,67 @@
+import numpy
+import pandas as pd
+import spacy
+import spacy.cli
+
+# spacy.cli.download("en_core_web_lg")
+nlp = spacy.load('en_core_web_lg')
+
+
+def get_vector(word):
+    vect = nlp(word).vector
+    return vect
+
+
+def vector_projection(vec, sub_space):
+    dot_prod = vec @ sub_space  # dot product
+    lin_norm = numpy.linalg.norm(sub_space)
+    proj = dot_prod / lin_norm ** 2 * sub_space
+    return proj
+
+
+# Formula for cosine similarity = (v1⋅v2) / (||A|| ||B||) where the numerator is the dot product of
+# the two vectors and the deonominator is the muliplication of the vector norms
+def cosine_similarity(vec1, vec2):
+    dot_vecs = vec1 @ vec2  # Calculate the dot product of the two vectors
+    norm_vecs = numpy.linalg.norm(vec1) * numpy.linalg.norm(vec2)  # Muliply the vector norms
+    cosine = dot_vecs / norm_vecs
+    return cosine
+
+
+def neutralize(word, gender_subspace):
+    vec = get_vector(word)
+    neut_vec = vector_projection(vec, gender_subspace)
+    neut_vec = vec - neut_vec
+    return neut_vec
+
+
+def equal(v, wb, mub):
+    sqrt = numpy.sqrt(numpy.abs(1 - numpy.linalg.norm(v) ** 2))
+    vectors = ((wb - mub) / numpy.linalg.norm(wb - mub))
+    equalized = sqrt * vectors
+    equalized = v + equalized
+    return equalized
+
+
+def equalize_vec(w, subspace, v, mub):
+    new_vec = vector_projection(w, subspace)
+    equalized = equal(v, new_vec, mub)
+    return equalized
+
+
+def equalize_vectors(words, subspace):
+    word_1, word_2 = words
+    w1 = get_vector(word_1)
+    w2 = get_vector(word_2)
+
+    mu = (w1 + w2) / 2
+    mub = vector_projection(mu, subspace)
+    v = mu - mub
+
+    equalized_1 = equalize_vec(w1, subspace, v, mub)
+    equalized_2 = equalize_vec(w2, subspace, v, mub)
+    return equalized_1, equalized_2
+
+
+gender_subspace = get_vector('woman') - get_vector('man')  # gender (bias) axis
+
