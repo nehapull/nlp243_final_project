@@ -11,3 +11,4 @@ To run the notebook, open it in jupyter notebook or google colab and run the pla
 The dependencies are: transformers library from huggingface, allennlp_models -- both of these libraries are installed in the very beginning of the notebook using pip.
 
 For the data augmentation, if the un-augmented data needs to be run, please search for the variable `augmentation=True` and set it to `augmentation=False` before running the notebook.
+Source of data - https://huggingface.co/datasets/conll2012_ontonotesv5
